@@ -1,34 +1,30 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# reading-habits-app
 
-## Getting Started
+### 読書習慣をつけるアプリ
 
-First, run the development server:
+## ブランチ戦略
 
-```bash
-npm run dev
-# or
-yarn dev
-```
+[プレフィックス]/issue の番号/作業内容
+例：feat/1/createWebTemplate
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## テーマ
 
-You can start editing the page by modifying `pages/index.tsx`. The page auto-updates as you edit the file.
+- 日々，本を読んだ感想(まとめとかなんでも良い)を投稿する。
+- 投稿は望めば共有され、共有ページでは同じ本を読んでいる人の投稿を見て、理解を深めたり読書するモチベーションにもつながる。
+- 本自体の感想を投稿するアプリはあるが、このアプリは**読書習慣をつける**ためのもので、一日に読めた本の**一部**(第 1 章や、p.2-23 など)**ごとでの投稿**を望むものである。
 
-[API routes](https://nextjs.org/docs/api-routes/introduction) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.ts`.
+## 用途
 
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/api-routes/introduction) instead of React pages.
+1. ユーザが本を読む．
+1. アプリを開き，今回読んだ本を選ぶ(登録していなければ，新しく登録する)
+1. 読んだ部分を書き，コメントを書いて投稿する．
 
-## Learn More
+## 画面設計
 
-To learn more about Next.js, take a look at the following resources:
+### ホーム画面:これまでに登録した本を選び，投稿
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+<img src="https://user-images.githubusercontent.com/38938327/107852535-96213900-6e54-11eb-8f71-0bd2386ce465.jpg" width=21% /><img src="https://user-images.githubusercontent.com/38938327/107852533-94577580-6e54-11eb-9f19-496886bdefb3.jpg" width=30% /><img src="https://user-images.githubusercontent.com/38938327/107852536-96b9cf80-6e54-11eb-88ca-fcbdcf72559e.jpg" width=30% />
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+### シェア画面:投稿された本の一覧から Line のようにコメントを見られる
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+<img src="https://user-images.githubusercontent.com/38938327/107852537-97526600-6e54-11eb-9e53-ba18c4107026.jpg" width=21% /><img src="https://user-images.githubusercontent.com/38938327/107852538-97eafc80-6e54-11eb-9664-a84690876261.jpg" width=21% />
