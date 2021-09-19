@@ -134,57 +134,46 @@ const Streamer: React.FC<Props> = ({ title, users_posts }) => {
               >
                 <h2>{user.name}</h2>
                 <div className="bg-gray-100 p-1 overflow-auto h-60">
-                  {user.posts.map(
-                    (
-                      post: {
-                        content: string;
-                        area: string;
-                        created_at: string;
-                        share: boolean;
-                        uid?: string;
-                      },
-                      index: number
-                    ) => {
-                      return (
-                        <div
-                          className="container mx-auto pr-4 mt-6"
-                          key={post.created_at + index + "_key"}
-                        >
-                          <div className="rounded w-60 bg-white max-w-xs mx-auto overflow-hidden shadow-lg">
-                            <div className="h-20 bg-opacity-80 bg-primary flex items-center justify-between shadow">
-                              <div className="p-6 w-full">
-                                <h3 className="text-2xl text-gray-700 font-bold">
-                                  {post.area}
-                                </h3>
-                                <div className="flex justify-end items-center">
-                                  <svg
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    className="h-4 w-4"
-                                    fill="none"
-                                    viewBox="0 0 24 24"
-                                    stroke="currentColor"
-                                  >
-                                    <path
-                                      strokeLinecap="round"
-                                      strokeLinejoin="round"
-                                      strokeWidth={2}
-                                      d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-                                    />
-                                  </svg>
-                                  <p className="text-sm text-gray-500 ml-1">
-                                    {post.created_at}
-                                  </p>
-                                </div>
+                  {user.posts.map((post: Post, index: number) => {
+                    return (
+                      <div
+                        className="container mx-auto pr-4 mt-6"
+                        key={post.created_at + index + "_key"}
+                      >
+                        <div className="rounded w-60 bg-white max-w-xs mx-auto overflow-hidden shadow-lg">
+                          <div className="h-20 bg-opacity-80 bg-primary flex items-center justify-between shadow">
+                            <div className="p-6 w-full">
+                              <h3 className="text-2xl text-gray-700 font-bold">
+                                {post.area}
+                              </h3>
+                              <div className="flex justify-end items-center">
+                                <svg
+                                  xmlns="http://www.w3.org/2000/svg"
+                                  className="h-4 w-4"
+                                  fill="none"
+                                  viewBox="0 0 24 24"
+                                  stroke="currentColor"
+                                >
+                                  <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth={2}
+                                    d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                                  />
+                                </svg>
+                                <p className="text-sm text-gray-500 ml-1">
+                                  {post.created_at}
+                                </p>
                               </div>
                             </div>
-                            <p className="pt-8 pb-14 text-lg ml-5">
-                              {post.content}
-                            </p>
                           </div>
+                          <p className="pt-8 pb-14 text-lg ml-5">
+                            {post.content}
+                          </p>
                         </div>
-                      );
-                    }
-                  )}
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
             );
