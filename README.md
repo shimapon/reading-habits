@@ -2,10 +2,20 @@
 
 ### 読書習慣をつけるアプリ
 
-## ブランチ戦略
+## 技術
 
-[プレフィックス]/issue の番号/作業内容
-例：feat/1/createWebTemplate
+- Next.js(React.FC)
+- firestore
+
+### Style
+
+- tailwindCSS
+
+  - headlessUI
+
+#### Icon
+
+- heroicons
 
 ## テーマ
 
