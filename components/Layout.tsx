@@ -20,7 +20,7 @@ export const Layout: React.FC<Props> = ({ children, isTop }) => {
           content="【読書習慣をつけよう！】読書習慣アプリは，あなたの日々の読書を応援します！少しだけでも良いので，その日読んだ本の内容をまとめて投稿をしていきましょう！公開を許可された投稿は他のユーザにも見ることができます！他の人が日々どんな本を読んで，どんなことを考えたのかを時系列で追うことができます！"
         />
       </Head>
-      <main className="bg-gray-200 min-h-screen pb-14">
+      <main className="bg-gray-200 min-h-screen pb-14 max-w-6xl mx-auto">
         {!isTop && (
           <div className="relative">
             <Link href="/" passHref>

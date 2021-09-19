@@ -349,7 +349,7 @@ const Index: React.FC<Props> = ({ mybooks_props, all_books }) => {
                 className="w-96 text-2xl rounded border-2 border-gray-400 m-4"
               />
             </div>
-            <div className="grid grid-flow-row grid-cols-1 md:grid-cols-2 gr gap-1 m-3 justify-items-center">
+            <div className="grid grid-flow-row grid-cols-1 gap-1 m-3 justify-items-center">
               {mybooks.map((book: Book) => {
                 return (
                   <Link
