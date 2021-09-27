@@ -3,7 +3,7 @@ import React, { Fragment, useState } from "react";
 import { GetServerSideProps, GetStaticPaths } from "next";
 import Link from "next/link";
 import { Layout } from "components/Layout";
-import { Firebase } from "lib/firebase";
+import { Login, Logout, auth, Firebase } from "lib/firebase";
 
 type Props = {
   title: string;
@@ -46,6 +46,15 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
         if (doc.data().share) posts.push(doc.data() as Post);
       });
     });
+
+  // 作成日でソート
+  posts.sort(function (a, b) {
+    if (a.created_at < b.created_at) {
+      return -1;
+    } else {
+      return 1;
+    }
+  });
 
   let users_posts: UserPosts[] = [];
   let uids: string[] = [];

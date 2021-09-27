@@ -1,8 +1,8 @@
 import React, { Fragment, useEffect, useState } from "react";
 import { GetServerSideProps } from "next";
 import { Layout } from "components/Layout";
-import { Firebase } from "lib/firebase";
 import { Dialog, Switch, Transition } from "@headlessui/react";
+import { Login, Logout, auth, Firebase } from "lib/firebase";
 
 type Post = {
   content: string;
@@ -25,7 +25,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 
   await Firebase.firestore()
     .collection("users")
-    .doc("r0eGCtbNxDaWHcczKGdHPsq6Okm1")
+    .doc(auth.currentUser?.uid)
     .collection("books")
     .doc(params.id)
     .collection("posts_" + params.id)
@@ -64,17 +64,34 @@ const Streamer: React.FC<Props> = ({ posts_props, title, isbn }) => {
   const [content, setContent] = useState<string>("");
   const [posts, setPosts] = useState<Post[]>([]);
 
-  console.log(posts);
-
   useEffect(() => {
-    return setPosts(posts_props);
-  }, []);
+    getMYPosts();
+  }, [auth.currentUser]);
+
+  const getMYPosts = async () => {
+    let posts: Post[] = [];
+
+    await Firebase.firestore()
+      .collection("users")
+      .doc(auth.currentUser?.uid)
+      .collection("books")
+      .doc(isbn)
+      .collection("posts_" + isbn)
+      .orderBy("created_at")
+      .get()
+      .then(async (snapshots) => {
+        snapshots.docs.map((doc) => {
+          posts.push(doc.data() as Post);
+        });
+      });
+    setPosts(posts);
+  };
 
   const sendData = async () => {
     try {
       await Firebase.firestore()
         .collection("users")
-        .doc("r0eGCtbNxDaWHcczKGdHPsq6Okm1")
+        .doc(auth.currentUser?.uid)
         .collection("books")
         .doc(isbn)
         .collection("posts_" + isbn)
@@ -83,8 +100,23 @@ const Streamer: React.FC<Props> = ({ posts_props, title, isbn }) => {
           content: content,
           area: area,
           share: enabled,
-          uid: "r0eGCtbNxDaWHcczKGdHPsq6Okm1",
+          uid: auth.currentUser?.uid,
         });
+
+      let posts: Post[] = [];
+      await Firebase.firestore()
+        .collection("users")
+        .doc(auth.currentUser?.uid)
+        .collection("books")
+        .doc(isbn)
+        .collection("posts_" + isbn)
+        .get()
+        .then(async (snapshots) => {
+          snapshots.docs.map((doc) => {
+            posts.push(doc.data() as Post);
+          });
+        });
+      setPosts(posts);
     } catch (error) {
       console.log(error);
     }

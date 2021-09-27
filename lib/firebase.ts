@@ -14,4 +14,51 @@ const config = {
 if (firebase.apps.length === 0) {
   firebase.initializeApp(config);
 }
+
 export const Firebase = firebase;
+export const auth = firebase.auth();
+
+export const Login = () => {
+  const provider = new firebase.auth.GoogleAuthProvider();
+  firebase
+    .auth()
+    .signInWithPopup(provider)
+    .then(function (result: any) {
+      return result;
+    })
+    .catch(function (error) {
+      console.log(error);
+      const errorCode = error.code;
+      console.log(errorCode);
+      const errorMessage = error.message;
+      console.log(errorMessage);
+    });
+};
+
+// ログイン状態の検知
+export const listenAuthState = (dispatch: any) => {
+  return firebase.auth().onAuthStateChanged(function (user) {
+    if (user) {
+      dispatch({
+        type: "login",
+        payload: {
+          user,
+        },
+      });
+    } else {
+      dispatch({
+        type: "logout",
+      });
+    }
+  });
+};
+
+export const firebaseUser = () => {
+  return firebase.auth().currentUser;
+};
+
+export const Logout = () => {
+  auth.signOut().then(() => {
+    window.location.reload();
+  });
+};

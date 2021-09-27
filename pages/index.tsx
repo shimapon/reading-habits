@@ -1,5 +1,4 @@
 import { Layout } from "components/Layout";
-import { Firebase } from "lib/firebase";
 import { GetStaticProps, GetServerSideProps } from "next";
 import { useState, useEffect, Fragment } from "react";
 import Link from "next/link";
@@ -7,6 +6,8 @@ import { Dialog, Switch, Transition } from "@headlessui/react";
 import { motion } from "framer-motion";
 
 import { Menu } from "@headlessui/react";
+
+import { Login, Logout, auth, Firebase } from "lib/firebase";
 
 // ページコンポーネントに渡されるデータ
 type Props = {
@@ -23,9 +24,10 @@ type Book = {
 export const getServerSideProps: GetServerSideProps = async (context) => {
   let mybooks_props: Book[] = [];
 
+  // getServerSidePropsではcurrentUserが取れない．
   await Firebase.firestore()
     .collection("users")
-    .doc("r0eGCtbNxDaWHcczKGdHPsq6Okm1")
+    .doc(auth.currentUser?.uid)
     .collection("books")
     .get()
     .then(async (snapshots) => {
@@ -58,59 +60,33 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   };
 };
 
-const Login = () => {
-  const provider = new Firebase.auth.GoogleAuthProvider();
-  Firebase.auth()
-    .signInWithRedirect(provider)
-    .then(function (result: any) {
-      return result;
-    })
-    .catch(function (error) {
-      console.log(error);
-      const errorCode = error.code;
-      console.log(errorCode);
-      const errorMessage = error.message;
-      console.log(errorMessage);
-    });
-};
-
-const Logout = (setfunc: Function) => {
-  Firebase.auth().signOut;
-  setfunc(null);
-};
-
-// ログイン状態の検知
-const listenAuthState = (setfunc: Function) => {
-  return Firebase.auth().onAuthStateChanged(async (user) => {
-    if (user) {
-      setfunc(user);
-      var userDoc = await Firebase.firestore()
-        .collection("users")
-        .doc(user.uid)
-        .get();
-      if (!userDoc.exists) {
-        // Firestore にユーザー用のドキュメントが作られていなければ作る
-        await userDoc.ref.set({
-          name: user.displayName,
-        });
-      }
-    } else {
-      console.log("error");
-    }
-  });
-};
-
 const Index: React.FC<Props> = ({ mybooks_props, all_books }) => {
-  const [currentUser, setUser] = useState<firebase.default.User | null>(null);
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [isbn, setISBN] = useState<string>("");
   const [mybooks, setMybooks] = useState<Book[]>([]);
+  const [searchBook, setSearchBook] = useState("");
 
   useEffect(() => {
-    setMybooks(mybooks_props);
+    getMYbooks();
+  }, [auth.currentUser]);
 
-    return listenAuthState(setUser);
-  }, []);
+  const getMYbooks = async () => {
+    const mybooks: Book[] = [];
+    await Firebase.firestore()
+      .collection("users")
+      .doc(auth.currentUser?.uid)
+      .collection("books")
+      .get()
+      .then(async (snapshots) => {
+        snapshots.docs.map((doc) => {
+          mybooks.push({
+            isbn: doc.id,
+            ...(doc.data() as { title: string; thumbnail: string }),
+          });
+        });
+      });
+    setMybooks(mybooks);
+  };
 
   const sendData = async () => {
     const res = await fetch(
@@ -127,7 +103,7 @@ const Index: React.FC<Props> = ({ mybooks_props, all_books }) => {
     try {
       await Firebase.firestore()
         .collection("users")
-        .doc(currentUser!.uid)
+        .doc(auth.currentUser!.uid)
         .collection("books")
         .doc(isbn)
         .set({
@@ -138,7 +114,7 @@ const Index: React.FC<Props> = ({ mybooks_props, all_books }) => {
 
       await Firebase.firestore()
         .collection("users")
-        .doc(currentUser!.uid)
+        .doc(auth.currentUser!.uid)
         .collection("books")
         .get()
         .then(async (snapshots) => {
@@ -183,7 +159,7 @@ const Index: React.FC<Props> = ({ mybooks_props, all_books }) => {
               ></path>
             </svg>
           </div>
-          {!currentUser && (
+          {!auth.currentUser && (
             <button
               onClick={Login}
               className="rounded text-primary-contrastText bg-secondary p-2 shadow text-xl"
@@ -191,13 +167,13 @@ const Index: React.FC<Props> = ({ mybooks_props, all_books }) => {
               Login
             </button>
           )}
-          {currentUser && (
+          {auth.currentUser && (
             <Menu as="div" className="relative inline-block text-left">
               <div>
                 <Menu.Button>
                   <img
-                    src={currentUser.photoURL!}
-                    alt={currentUser.displayName + "_profIMG"}
+                    src={auth.currentUser.photoURL!}
+                    alt={auth.currentUser.displayName + "_profIMG"}
                     className="w-12 h-12 rounded-full"
                   />
                 </Menu.Button>
@@ -216,7 +192,7 @@ const Index: React.FC<Props> = ({ mybooks_props, all_books }) => {
                     <Menu.Item>
                       {({ active }) => (
                         <button
-                          onClick={() => Logout(setUser)}
+                          onClick={() => Logout()}
                           className={`${
                             active
                               ? "bg-primary-light text-primary-contrastText"
@@ -303,7 +279,7 @@ const Index: React.FC<Props> = ({ mybooks_props, all_books }) => {
           みんなの投稿でさらに理解を深めよう！
         </div>
 
-        {!currentUser && (
+        {!auth.currentUser && (
           <div className="font-serif font-bold justify-center items-center  flex mx-auto p-3 text-xl text-primary-contrastText my-2 w-11/12 border-b-2 border-secondary-contrastText">
             早速ログイン！！ →
             <motion.button
@@ -323,7 +299,7 @@ const Index: React.FC<Props> = ({ mybooks_props, all_books }) => {
           </div>
         )}
 
-        {currentUser && (
+        {auth.currentUser && (
           <div>
             {/* Books */}
             <h2 className="text-3xl flex justify-start items-center m-1 font-bold  text-primary-contrastText">
@@ -343,12 +319,17 @@ const Index: React.FC<Props> = ({ mybooks_props, all_books }) => {
               </svg>
               Books
             </h2>
-            <div className="text-center">
+            {/* 所持本検索窓（今は実装しない） */}
+            {/* <div className="text-center">
               <input
                 type="text"
-                className="w-96 text-2xl rounded border-2 border-gray-400 m-4"
+                name="bookname"
+                id="bookname"
+                placeholder="キーワードを入力"
+                onChange={(e) => setSearchBook(e.target.value)}
+                className="w-96 text-xl rounded border-2 border-gray-400 outline-none border-b-2 py-2 px-4 placeholder-gray-300 "
               />
-            </div>
+            </div> */}
             <div className="grid grid-flow-row grid-cols-1 gap-1 m-3 justify-items-center">
               {mybooks.map((book: Book) => {
                 return (
@@ -484,7 +465,7 @@ const Index: React.FC<Props> = ({ mybooks_props, all_books }) => {
           {all_books.map((book: any) => {
             return (
               <Link
-                href={"posts/" + book.isbn}
+                href={"/posts/" + book.isbn}
                 passHref
                 key={book.title + "_otherkey2"}
               >
